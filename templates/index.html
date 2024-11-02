@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Presentation Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Product+Sans&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e0e0e0; /* Grey background */
+            font-family: 'Product Sans', sans-serif; /* Google Product Sans font */
+            display: flex; /* Enable flexbox layout */
+            flex-direction: column; /* Column layout */
+            align-items: center; /* Center items horizontally */
+            height: 100vh; /* Full height */
+            margin: 0; /* Remove default margin */
+        }
+        h1 {
+            color: #333; /* Darker color for the heading */
+            margin-top: 20px; /* Space at the top */
+            margin-bottom: 10px; /* Space below the heading */
+        }
+        .form-container {
+            display: flex; /* Enable flexbox for the form container */
+            flex-direction: column; /* Stack form elements vertically */
+            justify-content: center; /* Center elements vertically */
+            align-items: stretch; /* Stretch to full width */
+            width: 400px; /* Fixed width for the form */
+            margin-top: auto; /* Push to the bottom */
+            margin-bottom: 20px; /* Space from bottom */
+        }
+        form {
+            background-color: white; /* White background for the form */
+            padding: 20px; /* Padding inside the form */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+        }
+        label {
+            margin: 10px 0 5px; /* Spacing for labels */
+            display: block; /* Block display for labels */
+            font-size: 16px; /* Font size for labels */
+        }
+        input[type="text"], textarea {
+            width: 100%; /* Full width for input fields */
+            padding: 10px; /* Padding inside input fields */
+            margin: 10px 0; /* Margin above and below fields */
+            border: 1px solid #ccc; /* Light grey border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 16px; /* Larger font size */
+        }
+        button {
+            background-color: #007bff; /* Blue background for the button */
+            color: white; /* White text color */
+            border: none; /* Remove border */
+            padding: 10px 20px; /* Padding for button */
+            border-radius: 5px; /* Rounded corners for the button */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 16px; /* Larger font size */
+            display: block; /* Block display for button */
+            margin-top: 10px; /* Space above button */
+            width: 100%; /* Full width for button */
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>Convert Text to Presentation</h1>
+    <div class="form-container">
+        <form id="convertForm">
+            <label for="title">Presentation Title:</label>
+            <input type="text" id="title" name="title" placeholder="Enter title" required>
+            
+            <label for="text">Input Text:</label>
+            <textarea id="text" name="text" rows="10" placeholder="Paste your text here" required></textarea>
+            
+            <button type="submit">Convert to PPT</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('convertForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const text = document.getElementById('text').value;
+
+            const response = await fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, text })
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Generated_Presentation.pptx';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('Error: Unable to generate presentation');
+            }
+        });
+    </script>
+</body>
+</html>
